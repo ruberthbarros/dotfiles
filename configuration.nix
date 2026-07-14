@@ -37,6 +37,8 @@
     onActivation.extraFlags = [ "--force" ];
     brews = [
       "herdr"
+      "awscli"
+      "gh"
     ];
     casks = [
       "wezterm"
