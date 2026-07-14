@@ -27,6 +27,7 @@
   };
   nix-homebrew = {
     enable = true;
+    autoMigrate = true;  # adopt the pre-existing /opt/homebrew install instead of erroring
     inherit user;
   };
   homebrew = {
