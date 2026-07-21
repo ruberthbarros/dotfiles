@@ -39,6 +39,7 @@
       "herdr"
       "awscli"
       "gh"
+      "node"
     ];
     casks = [
       "wezterm"
