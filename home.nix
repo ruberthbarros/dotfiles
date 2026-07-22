@@ -18,6 +18,8 @@ in
     neovim
     uv        # python package + env manager (also manages python itself)
     duckdb    # in-process analytical sql database + cli
+    terraform    # infrastructure as code (pinned via flake.lock)
+    terragrunt   # terraform wrapper for dry, multi-env configs
     # the font everything renders in
     nerd-fonts.hack
   ];
