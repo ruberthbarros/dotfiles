@@ -16,6 +16,8 @@ in
     jq        # json on the command line
     lazygit
     neovim
+    uv        # python package + env manager (also manages python itself)
+    duckdb    # in-process analytical sql database + cli
     # the font everything renders in
     nerd-fonts.hack
   ];
