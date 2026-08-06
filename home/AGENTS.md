@@ -1,6 +1,7 @@
 # global agent instructions
 
 - Never use the em dash "—". Use plain dash "-" instead
+- Write in plain english. Use common words and short sentences. Avoid Jargons when a simpler term exists. If technical term is necessary, define it the first time you use it. Assume I'm intelligent but unfamiliar with the terminology. Be concise but do not remove details needed for correctness.
 - When writing commit messages, NEVER auto-add your agent name as co-author. Same for pull request descriptions.
 - Never manually modify CHANGELOG.md files or any files that are marked as auto-generated
 - When making technical decisions, do not give much weight to development cost.
