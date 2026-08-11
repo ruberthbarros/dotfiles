@@ -32,6 +32,16 @@ in
     syntaxHighlighting.enable = true;  # commands turn green when valid
     initContent = ''
       bindkey '^f' autosuggest-accept
+
+      # herdr resumes agent panes by typing "claude --resume=<id>" into a new
+      # shell. Intercept that exact case and add the flag the "cc" alias uses.
+      claude() {
+        if [[ -n "$HERDR_PANE_ID" && "$1" == --resume=* ]]; then
+          command claude --dangerously-skip-permissions "$@"
+        else
+          command claude "$@"
+        fi
+      }
     '';
     shellAliases = {
       ".." = "cd ..";
