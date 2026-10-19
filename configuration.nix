@@ -42,8 +42,38 @@
       "node"
     ];
     casks = [
+      # terminals + editors
       "wezterm"
+      "iterm2"
+      "visual-studio-code"
+      "cursor"
+      "antigravity"
+      "datagrip"
+      # ai
       "claude-code@latest"
+      "claude"
+      "chatgpt"
+      # work + chat
+      "slack"
+      "zoom"
+      "linear-linear"
+      "granola"
+      "discord"
+      "whatsapp"
+      "obsidian"
+      # browsers
+      "google-chrome"
+      "firefox"
+      "firefox@developer-edition"
+      "microsoft-edge"
+      # dev tools
+      "docker-desktop"
+      "postman"
+      "windows-app"  # formerly Microsoft Remote Desktop
+      # utilities
+      "rectangle"
+      "logi-options+"
+      "spotify"
     ];
   };
 }
