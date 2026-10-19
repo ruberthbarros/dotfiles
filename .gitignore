@@ -2,6 +2,8 @@
 home/.config/herdr/*.log
 home/.config/herdr/session.json
 home/.config/herdr/*.sock
+home/.config/herdr/*.sock.*
+home/.config/herdr/session-snapshots/
 home/.config/herdr/release-notes.json
 
 # macOS + nix build noise
@@ -11,3 +13,6 @@ result-*
 
 # no-mistakes local validation state - never commit in this public repo
 .no-mistakes/
+# Claude-managed skill folders (local only)
+home/.claude/skills/.trash/
+home/.claude/skills/synced/
