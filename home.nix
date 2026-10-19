@@ -32,16 +32,6 @@ in
     syntaxHighlighting.enable = true;  # commands turn green when valid
     initContent = ''
       bindkey '^f' autosuggest-accept
-
-      # herdr resumes agent panes by typing "claude --resume=<id>" into a new
-      # shell. Intercept that exact case and add the flag the "cc" alias uses.
-      claude() {
-        if [[ -n "$HERDR_PANE_ID" && "$1" == --resume=* ]]; then
-          command claude --dangerously-skip-permissions "$@"
-        else
-          command claude "$@"
-        fi
-      }
     '';
     shellAliases = {
       ".." = "cd ..";
@@ -78,6 +68,12 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
   home.file.".claude/skills".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/skills";
+  # herdr's Claude hook script, vendored so a new machine needs no install step.
+  # To update it: run `herdr integration install claude`, review the script
+  # change in git, and delete the duplicate SessionStart entry it adds to
+  # settings.json (herdr only recognizes its own absolute-path entry).
+  home.file.".claude/hooks".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/hooks";
 
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";

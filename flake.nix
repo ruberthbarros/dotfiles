@@ -30,6 +30,9 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            # Move aside (instead of failing on) files that apps rewrote in place of
+            # our symlinks, e.g. Claude Code replacing ~/.claude/settings.json.
+            home-manager.backupFileExtension = "hm-backup";
             home-manager.extraSpecialArgs = { inherit user; };
             home-manager.users.${user} = import ./home.nix;
           }

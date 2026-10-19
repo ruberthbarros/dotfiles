@@ -1,13 +1,18 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "model": "opus[1m]",
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "*",
+        "matcher": "^(startup|resume|clear|compact|fork)$",
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/Users/ruberth/.claude/hooks/herdr-agent-state.sh' session",
+            "command": "bash \"$HOME/.claude/hooks/herdr-agent-state.sh\" session",
             "timeout": 10
           }
         ]
@@ -18,7 +23,13 @@
     "type": "command",
     "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); used=$(echo \"$input\" | jq -r '.context_window.used_percentage // empty'); if [ -n \"$used\" ]; then printf \"%s | ctx: %.0f%% used\" \"$model\" \"$used\"; else printf \"%s\" \"$model\"; fi"
   },
+  "outputStyle": "Concise",
   "effortLevel": "medium",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
+  },
   "tui": "fullscreen",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
