@@ -1,9 +1,9 @@
 # dotfiles
 
-Watch the walkthrough: https://youtu.be/5N-okeDdIuI
-
 My personal Mac setup, managed with nix-darwin and home-manager.
 One repo, one command, and a fresh Mac ends up configured the same way every time.
+
+Forked from [kunchenguid/dotfiles](https://github.com/kunchenguid/dotfiles) ([walkthrough video](https://youtu.be/5N-okeDdIuI)).
 
 ## Contributing / Using This Repo
 
@@ -16,33 +16,39 @@ If you find a bug, please open a GitHub Issue using the bug report template.
 Running the switch builds:
 
 - System settings (dark mode, key repeat, dock, Finder, trackpad)
-- Homebrew apps (casks and CLI tools)
-- Nix user packages (ripgrep, fd, fzf, jq, lazygit, Neovim, Hack Nerd Font)
+- Homebrew CLI tools (`brews` in `configuration.nix`): herdr, awscli, gh, node
+- Homebrew apps (`casks` in `configuration.nix`): Slack, Zoom, Claude, Linear, Granola, VS Code, Cursor, browsers, Docker Desktop, and more
+- Nix user packages (`home.packages` in `home.nix`): ripgrep, fd, fzf, jq, lazygit, Neovim, uv, duckdb, terraform, terragrunt, Hack Nerd Font
 - Shell (zsh, aliases, starship prompt)
 - Editor (Neovim config with the rose-pine moon theme)
 - Terminal (WezTerm config with the rose-pine moon theme)
-- Agent configs (Claude, Codex, opencode all share one AGENTS.md)
+- Agent configs (Claude, Codex, opencode all share one AGENTS.md, plus Claude settings and skills)
 
-## Prerequisites
+## New laptop setup, step by step
 
-- Apple Silicon Mac, by default.
-- Intel Mac: change one line.
-  In `configuration.nix`, set `nixpkgs.hostPlatform = "x86_64-darwin";` (the comment right there tells you the same thing).
+Plan for about an hour, mostly waiting on downloads.
+Apple Silicon is assumed (see "Make it yours" for Intel).
 
-## Fresh-machine setup
+### 1. Get macOS ready
 
-On a brand new Mac, from a bare clone of this repo:
+1. Finish the macOS setup assistant and create your user account.
+   Using `ruberth` as the account name means no edits are needed, but `bootstrap.sh` can fix a different name for you.
+2. Sign in to your Apple ID and run System Settings > General > Software Update.
+3. Install Apple's command line tools, which give you `git`:
+
+   ```sh
+   xcode-select --install
+   ```
+
+   Click "Install" in the popup and wait for it to finish.
+
+### 2. Clone and run the bootstrap
 
 ```sh
-git clone https://github.com/kunchenguid/dotfiles.git
+mkdir -p ~/github/ruberthbarros
+cd ~/github/ruberthbarros
+git clone https://github.com/ruberthbarros/dotfiles.git
 cd dotfiles
-```
-
-Before you run it: review "Make it yours" below.
-Change the host label or CPU architecture if needed, and read the Homebrew cleanup warning.
-`bootstrap.sh` applies the config to your machine, so do this first.
-
-```sh
 ./bootstrap.sh
 ```
 
@@ -54,10 +60,58 @@ Change the host label or CPU architecture if needed, and read the Homebrew clean
 3. Checks the `user` configured in `flake.nix` against your actual macOS username, and offers to fix it for you if they differ.
 4. Runs the first `darwin-rebuild switch`.
    It fetches the `darwin-rebuild` tool from the nix-darwin 26.05 release branch, then applies this repo's locked flake config.
+   This step installs Homebrew and every app in `configuration.nix`, so it takes a while.
 
-After that, `darwin-rebuild` exists and you're on the normal workflow below.
+It asks for your password more than once (for `sudo`, and for some app installers).
+If it fails with `nix: command not found`, open a new terminal window and run `./bootstrap.sh` again.
 
-### Validate without applying
+### 3. Open a new terminal
+
+Quit Terminal and open WezTerm.
+The new shell has the zsh config, prompt, and all the tools on its `PATH`.
+The first time you run `nvim`, it downloads its plugins (needs network once).
+
+### 4. Log in to things
+
+The config installs apps but cannot log in for you.
+
+1. Set your git identity (this config deliberately does not set it):
+
+   ```sh
+   git config --global user.name "Your Name"
+   git config --global user.email you@example.com
+   ```
+
+2. GitHub CLI, and an SSH key if you push over SSH:
+
+   ```sh
+   gh auth login
+   ```
+
+   `gh auth login` can create and upload an SSH key for you when it asks about the protocol.
+3. AWS: `aws configure sso` (or `aws configure` for access keys).
+4. Claude Code: run `claude` and follow the login prompt.
+5. Open each app once and sign in: Slack, Zoom, Claude, ChatGPT, Linear, Granola, Chrome, Spotify, and so on.
+
+### 5. Grant macOS permissions
+
+Some apps only work after you allow them in System Settings > Privacy & Security.
+Each app usually prompts you on first launch.
+
+- Accessibility: Rectangle, Logi Options+
+- Screen & System Audio Recording: Zoom, Slack, Granola, Chrome (for screen sharing)
+- Microphone and Camera: Zoom, Slack, Granola, Chrome
+
+Also start Docker Desktop once to accept its terms and finish its setup, and pick your default browser in System Settings > Desktop & Dock.
+
+### 6. Install what the config doesn't cover
+
+- Mac App Store only apps (for example Kindle).
+- Work-managed apps (security, VPN, device management) come from your company's IT, not from this repo.
+
+That's it. From now on, use the daily workflow below.
+
+## Validate without applying
 
 Once Nix is installed (`bootstrap.sh` step 1 handles that), you can check that the config builds without touching your system - handy when you have edited something:
 
@@ -79,20 +133,23 @@ Edit the config files in place, then apply:
 That's it.
 No separate build-and-copy step.
 
+To add an app, find its cask name with `brew search <name>`, add it to `casks` in `configuration.nix`, and run `./rebuild.sh`.
+Never install with `brew install` directly - the next rebuild removes it (see the cleanup warning below).
+
 ## Make it yours
 
-This repo is mine.
-If you clone it, review these before you run `bootstrap.sh`:
+If you fork this repo, review these before you run `bootstrap.sh`:
 
-- **Username**: run `./bootstrap.sh` (it detects your macOS username and offers to set it) OR change the single `user = "kunchen"` line in `flake.nix`.
+- **Username**: run `./bootstrap.sh` (it detects your macOS username and offers to set it) OR change the single `user = "ruberth"` line in `flake.nix`.
   Everything else (`configuration.nix`, `home.nix`, home directory paths) is threaded from that one variable.
 - **Host label** `"mac"`, in three places: `flake.nix` (the `darwinConfigurations."mac"` name), `rebuild.sh:5` (the `#mac` at the end of the flake reference), and `bootstrap.sh`'s first-switch command (also `#mac`).
   All three have to match.
-- **CPU architecture**, `hostPlatform` in `configuration.nix` (see Prerequisites above).
+- **CPU architecture**: `hostPlatform` in `configuration.nix`.
+  For an Intel Mac, set `nixpkgs.hostPlatform = "x86_64-darwin";` (the comment right there tells you the same thing).
+- **App list**: trim `brews` and `casks` in `configuration.nix` to what you actually use.
 
 **Git identity:** this config deliberately does not set your git name or email.
-Git will stop your first commit and tell you to set them (`git config --global user.name "Your Name"` and `git config --global user.email you@example.com`).
-If you'd rather manage that declaratively, add this back to `home.nix` with your own identity:
+If you'd rather manage that declaratively, add this to `home.nix` with your own identity:
 
 ```nix
 programs.git = {
@@ -106,7 +163,9 @@ programs.git = {
 
 **Homebrew cleanup warning:** `configuration.nix` sets `homebrew.onActivation.cleanup = "zap"`.
 That means every time you switch, Homebrew removes any package or cask on your machine that isn't listed in the `brews` and `casks` arrays in `configuration.nix`.
+"Zap" also deletes that app's settings and data, not just the app.
 If you already have Homebrew stuff installed that isn't in that list, the first switch will uninstall it.
+Apps you installed outside Homebrew (drag-and-drop or the App Store) are not touched.
 Read through `brews` and `casks` before you run `bootstrap.sh` or `rebuild.sh` for the first time, and add anything you want to keep.
 
 **About `herdr`:** it's in the `brews` list.
@@ -124,11 +183,13 @@ If you don't use it, just remove it from `brews` in your copy.
 
 - `flake.nix` - the entry point.
   Wires up nixpkgs, nix-darwin, home-manager, and nix-homebrew, and declares the `mac` machine.
-- `configuration.nix` - system-level config: macOS defaults, Homebrew.
-- `home.nix` - user-level config: shell, packages, prompt, and the symlinks described below.
+- `configuration.nix` - system-level config: macOS defaults, Homebrew CLI tools and apps.
+- `home.nix` - user-level config: shell, Nix packages, prompt, and the symlinks described below.
+- `bootstrap.sh` - one-time setup for a fresh Mac.
 - `rebuild.sh` - re-applies the config after the first switch.
   Run this every time you make a change.
-- `home/` - the actual config files that get symlinked into place (Neovim, WezTerm, herdr, Claude settings, the shared `AGENTS.md`).
+- `sync-skills.sh` - copies Claude skills installed by `npx mattpocock/skills` into `home/.claude/skills` so they are versioned here.
+- `home/` - the actual config files that get symlinked into place (Neovim, WezTerm, herdr, Claude settings, hooks and skills, the shared `AGENTS.md`).
 
 ## How the symlinks work
 
