@@ -12,6 +12,13 @@
     home = "/Users/${user}";
   };
   system.stateVersion = 6;
+  # Some casks (zoom, docker-desktop, adopting a root-owned app) call sudo themselves.
+  # sudo runs each command in its own pseudo-terminal, so the default per-terminal
+  # password cache never reaches those nested calls and every one prompts again.
+  # A per-user cache lets the one password typed for rebuild.sh cover them all.
+  security.sudo.extraConfig = ''
+    Defaults:${user} timestamp_type=global
+  '';
   system.defaults = {
     NSGlobalDomain = {
       AppleInterfaceStyle = "Dark";
@@ -56,7 +63,7 @@
       # work + chat
       "slack"
       "zoom"
-      "linear-linear"
+      "linear"
       "granola"
       "discord"
       "whatsapp"
