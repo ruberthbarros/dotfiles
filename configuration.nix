@@ -67,6 +67,7 @@
       "postman"
       # utilities
       "rectangle"
+      "logi-options+"
     ];
   };
 }
